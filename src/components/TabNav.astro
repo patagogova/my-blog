@@ -1,0 +1,74 @@
+---
+const pathname = Astro.url.pathname;
+
+const tabs = [
+  { label: 'Home',  href: '/' },
+  { label: 'Blog',  href: '/blog' },
+  { label: 'About', href: '/about' },
+];
+
+function isActive(href: string) {
+  if (href === '/') return pathname === '/' || pathname === '';
+  return pathname.startsWith(href);
+}
+---
+
+<nav class="tab-nav">
+  {tabs.map(tab => {
+    const active = isActive(tab.href);
+    return (
+      <a href={tab.href} class:list={['tab', { active }]}>
+        {active && <span class="dot" />}
+        {tab.label}
+      </a>
+    );
+  })}
+</nav>
+
+<style>
+  .tab-nav {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    padding-left: 32px;
+  }
+
+  .tab {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    background: var(--bg-dim);
+    border: 1.5px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
+    border-radius: 6px 6px 0 0;
+    padding: 10px 22px;
+    margin-right: -1px;
+    position: relative;
+    z-index: 1;
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tab.active {
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--bg);
+    border-bottom-color: var(--bg);
+    z-index: 2;
+  }
+
+  .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+</style>
