@@ -1,0 +1,455 @@
+---
+---
+
+<section class="route-section" id="route-section" aria-label="Running log visualization">
+  <div class="route-sticky">
+    <div class="route-inner">
+
+      <div class="route-header">
+        <span class="route-label">all runs · may 2025 → now</span>
+        <span class="route-counter"><span id="route-dist">0</span> runs</span>
+      </div>
+
+      <div class="route-svg-wrap">
+        <svg
+          id="route-svg"
+          viewBox="0 0 400 400"
+          width="100%"
+          height="100%"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+        ></svg>
+        <div id="run-tooltip" class="run-tooltip">
+          <span class="tip-date"></span>
+          <span class="tip-km"></span>
+        </div>
+      </div>
+
+      <div class="route-footer">
+        <span id="route-hint" class="route-hint">↓ scroll to trace all runs</span>
+        <span id="route-complete" class="route-complete"></span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script type="module" is:inline>
+import * as d3 from 'https://esm.sh/d3@7';
+
+const RUNS = [
+  { date: "May 8, 2025",  km: 2.56 },
+  { date: "May 10, 2025", km: 3.06 },
+  { date: "May 14, 2025", km: 3.19 },
+  { date: "May 18, 2025", km: 3.85 },
+  { date: "May 20, 2025", km: 3.83 },
+  { date: "May 25, 2025", km: 4.22 },
+  { date: "May 26, 2025", km: 4.01 },
+  { date: "Jun 1, 2025",  km: 3.71 },
+  { date: "Jun 3, 2025",  km: 4.37 },
+  { date: "Jun 6, 2025",  km: 3.87 },
+  { date: "Jun 10, 2025", km: 5.78 },
+  { date: "Jun 14, 2025", km: 4.57 },
+  { date: "Jun 17, 2025", km: 5.63 },
+  { date: "Jun 22, 2025", km: 3.77 },
+  { date: "Jun 25, 2025", km: 5.03 },
+  { date: "Jul 1, 2025",  km: 3.50 },
+  { date: "Jul 5, 2025",  km: 5.02 },
+  { date: "Jul 8, 2025",  km: 4.52 },
+  { date: "Jul 13, 2025", km: 6.01 },
+  { date: "Jul 15, 2025", km: 6.06 },
+  { date: "Jul 19, 2025", km: 7.00 },
+  { date: "Jul 23, 2025", km: 3.62 },
+  { date: "Jul 26, 2025", km: 5.00 },
+  { date: "Aug 1, 2025",  km: 6.50 },
+  { date: "Aug 7, 2025",  km: 8.02 },
+  { date: "Aug 8, 2025",  km: 3.64 },
+  { date: "Aug 13, 2025", km: 5.01 },
+  { date: "Aug 16, 2025", km: 5.05 },
+  { date: "Aug 21, 2025", km: 5.55 },
+  { date: "Aug 26, 2025", km: 5.01 },
+  { date: "Aug 30, 2025", km: 6.24 },
+  { date: "Sep 3, 2025",  km: 5.02 },
+  { date: "Sep 6, 2025",  km: 5.05 },
+  { date: "Sep 13, 2025", km: 6.51 },
+  { date: "Sep 24, 2025", km: 4.00 },
+  { date: "Oct 1, 2025",  km: 6.00 },
+  { date: "Oct 11, 2025", km: 5.02 },
+  { date: "Oct 15, 2025", km: 5.24 },
+  { date: "Oct 26, 2025", km: 6.51 },
+  { date: "Oct 27, 2025", km: 4.02 },
+  { date: "Nov 1, 2025",  km: 7.51 },
+  { date: "Nov 5, 2025",  km: 5.39 },
+  { date: "Nov 9, 2025",  km: 9.00 },
+  { date: "Nov 11, 2025", km: 7.44 },
+  { date: "Nov 16, 2025", km: 10.01 },
+  { date: "Nov 20, 2025", km: 6.18 },
+  { date: "Nov 23, 2025", km: 6.01 },
+  { date: "Nov 26, 2025", km: 8.70 },
+  { date: "Nov 30, 2025", km: 12.00 },
+  { date: "Dec 7, 2025",  km: 14.01 },
+  { date: "Dec 10, 2025", km: 5.35 },
+  { date: "Dec 14, 2025", km: 10.01 },
+  { date: "Dec 19, 2025", km: 5.04 },
+  { date: "Dec 24, 2025", km: 5.00 },
+  { date: "Dec 28, 2025", km: 10.00 },
+  { date: "Dec 31, 2025", km: 5.03 },
+  { date: "Jan 1, 2026",  km: 5.00 },
+  { date: "Jan 4, 2026",  km: 7.04 },
+  { date: "Jan 5, 2026",  km: 5.00 },
+  { date: "Jan 8, 2026",  km: 5.55 },
+  { date: "Jan 11, 2026", km: 8.01 },
+  { date: "Jan 13, 2026", km: 5.51 },
+  { date: "Jan 17, 2026", km: 6.48 },
+  { date: "Jan 18, 2026", km: 9.00 },
+  { date: "Jan 20, 2026", km: 4.50 },
+  { date: "Jan 22, 2026", km: 4.53 },
+  { date: "Jan 25, 2026", km: 6.01 },
+  { date: "Jan 27, 2026", km: 6.01 },
+  { date: "Jan 29, 2026", km: 8.29 },
+  { date: "Feb 1, 2026",  km: 9.86 },
+  { date: "Feb 3, 2026",  km: 7.50 },
+  { date: "Feb 5, 2026",  km: 7.11 },
+  { date: "Feb 7, 2026",  km: 11.01 },
+  { date: "Feb 9, 2026",  km: 6.00 },
+  { date: "Feb 11, 2026", km: 6.14 },
+  { date: "Feb 14, 2026", km: 7.18 },
+  { date: "Feb 15, 2026", km: 12.00 },
+  { date: "Feb 18, 2026", km: 5.00 },
+  { date: "Feb 21, 2026", km: 5.95 },
+  { date: "Feb 22, 2026", km: 7.50 },
+  { date: "Feb 23, 2026", km: 7.00 },
+  { date: "Feb 26, 2026", km: 8.31 },
+  { date: "Mar 1, 2026",  km: 12.01 },
+  { date: "Mar 3, 2026",  km: 7.00 },
+  { date: "Mar 6, 2026",  km: 8.12 },
+  { date: "Mar 8, 2026",  km: 13.09 },
+  { date: "Mar 10, 2026", km: 6.00 },
+  { date: "Mar 13, 2026", km: 8.89 },
+  { date: "Mar 15, 2026", km: 10.00 },
+  { date: "Mar 19, 2026", km: 7.00 },
+  { date: "Mar 21, 2026", km: 5.05 },
+  { date: "Mar 29, 2026", km: 8.01 },
+  { date: "Mar 31, 2026", km: 7.01 },
+  { date: "Apr 2, 2026",  km: 8.75 },
+  { date: "Apr 4, 2026",  km: 15.00 },
+  { date: "Apr 7, 2026",  km: 8.01 },
+  { date: "Apr 9, 2026",  km: 5.00 },
+  { date: "Apr 13, 2026", km: 9.00 },
+  { date: "Apr 16, 2026", km: 8.11 },
+  { date: "Apr 18, 2026", km: 17.00 },
+  { date: "Apr 22, 2026", km: 7.51 },
+  { date: "Apr 23, 2026", km: 10.24 },
+  { date: "Apr 25, 2026", km: 18.01 },
+  { date: "Apr 26, 2026", km: 4.51 },
+  { date: "Apr 28, 2026", km: 6.01 },
+  { date: "Apr 30, 2026", km: 6.20 },
+  { date: "May 2, 2026",  km: 10.00 },
+  { date: "May 4, 2026",  km: 9.00 },
+];
+
+// ---------------------------------------------------------------------------
+// Path generation — same wiggly loop as original
+// ---------------------------------------------------------------------------
+const RAW_COORDS = (() => {
+  const pts = [];
+  const N = 120;
+  for (let i = 0; i < N; i++) {
+    const t = (i / N) * Math.PI * 2;
+    const r = 150
+      + 20 * Math.sin(5 * t + 0.4)
+      + 11 * Math.cos(11 * t + 1.3)
+      +  6 * Math.sin(19 * t + 2.2)
+      +  3 * Math.cos(31 * t + 0.7);
+    pts.push([200 + Math.cos(t) * r, 200 + Math.sin(t) * r]);
+  }
+  return pts;
+})();
+
+const N = RAW_COORDS.length;
+const TOTAL_KM = RUNS.reduce((s, r) => s + r.km, 0);
+
+// Map each run to an evenly-spaced index along the path
+const rScale = d3.scaleLinear([2, 18], [2.5, 8]).clamp(true);
+const runBubbles = RUNS.map((run, i) => {
+  const pathIdx = Math.round((i / (RUNS.length - 1)) * (N - 1));
+  const [x, y] = RAW_COORDS[pathIdx];
+  return { ...run, x, y, r: rScale(run.km), pathIdx };
+});
+
+// ---------------------------------------------------------------------------
+// D3 setup
+// ---------------------------------------------------------------------------
+const svg = d3.select('#route-svg');
+const tooltip = document.getElementById('run-tooltip');
+const svgWrap = document.querySelector('.route-svg-wrap');
+
+// Ghost outline
+const lineGen = d3.line().x(d => d[0]).y(d => d[1]).curve(d3.curveCatmullRomClosed.alpha(0.5));
+svg.append('path')
+  .datum(RAW_COORDS)
+  .attr('d', lineGen)
+  .attr('fill', 'none')
+  .attr('stroke', '#e2dfd9')
+  .attr('stroke-width', 1)
+  .attr('stroke-dasharray', '2 5');
+
+// Start ring
+svg.append('circle')
+  .attr('cx', RAW_COORDS[0][0])
+  .attr('cy', RAW_COORDS[0][1])
+  .attr('r', 5)
+  .attr('fill', 'none')
+  .attr('stroke', 'oklch(0.63 0.19 47)')
+  .attr('stroke-width', 1.5)
+  .attr('opacity', 0.4);
+
+svg.append('text')
+  .attr('x', RAW_COORDS[0][0] + 10)
+  .attr('y', RAW_COORDS[0][1] + 4)
+  .attr('font-family', '"IBM Plex Mono", monospace')
+  .attr('font-size', '8px')
+  .attr('letter-spacing', '0.06em')
+  .attr('fill', '#b8b4ae')
+  .text('first run');
+
+// Run bubbles — revealed by scroll, hoverable
+const bubbles = svg.selectAll('circle.run-bubble')
+  .data(runBubbles)
+  .enter()
+  .append('circle')
+  .attr('class', 'run-bubble')
+  .attr('cx', d => d.x)
+  .attr('cy', d => d.y)
+  .attr('r', d => d.r)
+  .attr('fill', 'oklch(0.63 0.19 47)')
+  .attr('opacity', 0)
+  .attr('cursor', 'pointer')
+  .on('mouseenter', function(event, d) {
+    d3.select(this)
+      .transition().duration(80)
+      .attr('fill', 'oklch(0.45 0.19 47)')
+      .attr('r', d.r + 1.5);
+
+    const tipDate = tooltip.querySelector('.tip-date');
+    const tipKm   = tooltip.querySelector('.tip-km');
+    tipDate.textContent = d.date;
+    tipKm.textContent   = d.km.toFixed(2) + ' km';
+
+    const rect = svgWrap.getBoundingClientRect();
+    tooltip.style.left = (event.clientX - rect.left) + 'px';
+    tooltip.style.top  = (event.clientY - rect.top)  + 'px';
+    tooltip.classList.add('visible');
+  })
+  .on('mousemove', function(event) {
+    const rect = svgWrap.getBoundingClientRect();
+    tooltip.style.left = (event.clientX - rect.left) + 'px';
+    tooltip.style.top  = (event.clientY - rect.top)  + 'px';
+  })
+  .on('mouseleave', function(event, d) {
+    d3.select(this)
+      .transition().duration(120)
+      .attr('fill', 'oklch(0.63 0.19 47)')
+      .attr('r', d.r);
+    tooltip.classList.remove('visible');
+  });
+
+// Moving head dot
+const headDot = svg.append('circle')
+  .attr('class', 'head-dot')
+  .attr('r', 5)
+  .attr('fill', 'oklch(0.63 0.19 47)')
+  .attr('opacity', 0);
+
+// ---------------------------------------------------------------------------
+// Scroll logic
+// ---------------------------------------------------------------------------
+const section    = document.getElementById('route-section');
+const distEl     = document.getElementById('route-dist');
+const hintEl     = document.getElementById('route-hint');
+const completeEl = document.getElementById('route-complete');
+
+completeEl.textContent = `${RUNS.length} runs · ${TOTAL_KM.toFixed(0)} km`;
+
+let raf = null;
+let lastProgress = -1;
+
+function getProgress() {
+  const rect = section.getBoundingClientRect();
+  const h    = section.offsetHeight;
+  const win  = window.innerHeight;
+  return Math.max(0, Math.min(1, -rect.top / (h - win)));
+}
+
+function render() {
+  raf = null;
+  const p = getProgress();
+  if (Math.abs(p - lastProgress) < 0.002) return;
+  lastProgress = p;
+
+  const visiblePathIdx = Math.floor(p * N);
+
+  // Reveal bubbles in chronological order
+  bubbles.attr('opacity', d => (d.pathIdx <= visiblePathIdx ? 0.85 : 0));
+
+  // Head dot
+  if (p > 0 && p < 0.99) {
+    const idx = Math.min(visiblePathIdx, N - 1);
+    headDot
+      .attr('cx', RAW_COORDS[idx][0])
+      .attr('cy', RAW_COORDS[idx][1])
+      .attr('opacity', 1);
+  } else {
+    headDot.attr('opacity', 0);
+  }
+
+  // Run counter
+  const visibleCount = runBubbles.filter(d => d.pathIdx <= visiblePathIdx).length;
+  distEl.textContent = visibleCount;
+
+  // Hint fades once scrolling starts
+  hintEl.style.opacity = p < 0.03 ? '1' : String(Math.max(0, 1 - p * 6));
+
+  // Complete badge
+  completeEl.style.opacity = p >= 0.98 ? '1' : '0';
+}
+
+function onScroll() {
+  if (!raf) raf = requestAnimationFrame(render);
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+render();
+</script>
+
+<style>
+  .route-section {
+    height: 200vh;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 65vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  @media (max-width: 768px) {
+    .route-section {
+      width: calc(100% + 48px);
+      margin-left: -24px;
+      transform: none;
+    }
+  }
+
+  .route-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .route-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .route-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 9px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .route-label { color: #b8b4ae; }
+
+  .route-counter {
+    color: #1a1917;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    min-width: 7ch;
+    text-align: right;
+  }
+
+  .route-svg-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: 62vh;
+    border: 1px solid #e2dfd9;
+    background: #faf9f7;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .route-footer {
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 0.07em;
+    min-height: 16px;
+    position: relative;
+  }
+
+  .route-hint {
+    color: #b8b4ae;
+    transition: opacity 0.4s ease;
+    display: block;
+  }
+
+  .route-complete {
+    position: absolute;
+    inset: 0;
+    color: oklch(0.63 0.19 47);
+    transition: opacity 0.6s ease;
+    opacity: 0;
+  }
+
+  /* Tooltip */
+  .run-tooltip {
+    position: absolute;
+    background: #1a1917;
+    color: #faf9f7;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+    padding: 6px 9px;
+    border-radius: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    white-space: nowrap;
+    transform: translate(-50%, calc(-100% - 12px));
+    z-index: 10;
+  }
+
+  .run-tooltip.visible { opacity: 1; }
+
+  .tip-date {
+    display: block;
+    color: #b8b4ae;
+  }
+
+  .tip-km {
+    display: block;
+    font-weight: 500;
+  }
+
+  /* SVG head dot pulse */
+  :global(.head-dot) {
+    animation: route-pulse 1.4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  @keyframes route-pulse {
+    0%, 100% { transform: scale(1);   opacity: 1;   }
+    50%       { transform: scale(2);   opacity: 0.3; }
+  }
+</style>
