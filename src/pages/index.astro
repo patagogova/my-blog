@@ -1,10 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import profilePic from '../assets/profile.png';
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
@@ -18,22 +20,20 @@ const allTags = [...new Set(posts.flatMap(p => p.data.tags ?? []))].sort();
       <!-- LEFT -->
       <aside class="left">
         <div class="photo-wrap">
-          <div class="photo-placeholder"></div>
+          <Image src={profilePic} alt="Paťa" class="profile-photo" />
           <div class="name-block">
-            <span class="first">Patricia</span>
+            <h1 class="first">Paťa</h1>
           </div>
         </div>
 
         <p class="bio">
-          Analyst &amp; curious person based in Prague.<br /><br />
-          <em>I write about data, slow mornings, and the web.</em>
+          Analyst &amp; curious person based in Prague.
         </p>
 
-        <nav class="left-nav">
-          <a href="/about">About</a>
-          <a href="/">Writing</a>
-          <a href="mailto:you@example.com">Contact</a>
-        </nav>
+        <p class="bio">
+          <a href="mailto:ahoj@patagogova.com">ahoj@patagogova.com</a>
+        </p>
+
       </aside>
 
       <!-- RIGHT -->
@@ -71,7 +71,13 @@ const allTags = [...new Set(posts.flatMap(p => p.data.tags ?? []))].sort();
           ))}
         </div>
 
-        <p class="footer">built with astro</p>
+        <div class="post-item teaser">
+          <span class="post-date">coming soon</span>
+          <div class="post-content">
+            <div class="post-title">How I Built This Blog</div>
+          </div>
+        </div>
+
       </main>
 
     </div>
@@ -95,33 +101,39 @@ const allTags = [...new Set(posts.flatMap(p => p.data.tags ?? []))].sort();
   /* LEFT */
   .left { position: sticky; top: 72px; }
 
-  .photo-placeholder {
+  .profile-photo {
     width: 100%;
     aspect-ratio: 3/4;
-    background: repeating-linear-gradient(
-      -45deg,
-      #e8e6e2 0px, #e8e6e2 1px,
-      #f0ede9 1px, #f0ede9 9px
-    );
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+
+  .photo-wrap {
+    position: relative;
   }
 
   .name-block {
-    position: relative;
-    margin-top: -28px;
-    margin-left: -2px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
     z-index: 2;
     pointer-events: none;
+    text-align: left;
+    line-height: 1;
+    transform: translateY(0.15em);
   }
 
   .first {
-    font-size: 36px;
-    font-weight: 500;
+    font-size: 80px;
+    font-weight: 700;
     line-height: 1;
     color: var(--orange);
     letter-spacing: -0.02em;
-    background: var(--bg);
-    display: inline-block;
-    padding: 2px 4px 0 0;
+    display: block;
+    padding: 0;
+    margin: 0;
+    line-height: 0.85;
   }
 
   .bio {
@@ -227,6 +239,12 @@ const allTags = [...new Set(posts.flatMap(p => p.data.tags ?? []))].sort();
   .post-item.hidden { display: none; }
   .post-item:hover .post-title { color: var(--orange); }
 
+  .post-item.teaser {
+    cursor: default;
+    opacity: 0.5;
+  }
+  .post-item.teaser:hover .post-title { color: var(--ink); }
+
   .post-date {
     font-size: 10px;
     color: var(--ink-muted);
@@ -277,7 +295,7 @@ const allTags = [...new Set(posts.flatMap(p => p.data.tags ?? []))].sort();
   @media (max-width: 720px) {
     .columns { grid-template-columns: 1fr; }
     .left { position: static; }
-    .photo-placeholder { max-width: 200px; }
+    .profile-photo { max-width: 200px; }
   }
 </style>
 

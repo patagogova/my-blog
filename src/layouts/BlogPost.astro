@@ -199,6 +199,12 @@ const { title, description, pubDate, tags = [], prevPost, nextPost } = Astro.pro
   .post-body :global(li) { margin-bottom: 4px; }
   .post-body :global(li::marker) { color: var(--orange); }
 
+  .post-body :global(mark) {
+    background: oklch(0.63 0.19 47 / 0.4);
+    color: inherit;
+    padding: 0 2px;
+  }
+
   .post-body :global(blockquote) {
     border-left: 2px solid var(--orange);
     padding: 14px 18px;

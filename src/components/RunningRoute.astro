@@ -21,6 +21,7 @@
         ></svg>
         <div id="run-tooltip" class="run-tooltip">
           <span class="tip-date"></span>
+          <span class="tip-name"></span>
           <span class="tip-km"></span>
         </div>
       </div>
@@ -38,141 +39,192 @@
 import * as d3 from 'https://esm.sh/d3@7';
 
 const RUNS = [
-  { date: "May 8, 2025",  km: 2.56 },
-  { date: "May 10, 2025", km: 3.06 },
-  { date: "May 14, 2025", km: 3.19 },
-  { date: "May 18, 2025", km: 3.85 },
-  { date: "May 20, 2025", km: 3.83 },
-  { date: "May 25, 2025", km: 4.22 },
-  { date: "May 26, 2025", km: 4.01 },
-  { date: "Jun 1, 2025",  km: 3.71 },
-  { date: "Jun 3, 2025",  km: 4.37 },
-  { date: "Jun 6, 2025",  km: 3.87 },
-  { date: "Jun 10, 2025", km: 5.78 },
-  { date: "Jun 14, 2025", km: 4.57 },
-  { date: "Jun 17, 2025", km: 5.63 },
-  { date: "Jun 22, 2025", km: 3.77 },
-  { date: "Jun 25, 2025", km: 5.03 },
-  { date: "Jul 1, 2025",  km: 3.50 },
-  { date: "Jul 5, 2025",  km: 5.02 },
-  { date: "Jul 8, 2025",  km: 4.52 },
-  { date: "Jul 13, 2025", km: 6.01 },
-  { date: "Jul 15, 2025", km: 6.06 },
-  { date: "Jul 19, 2025", km: 7.00 },
-  { date: "Jul 23, 2025", km: 3.62 },
-  { date: "Jul 26, 2025", km: 5.00 },
-  { date: "Aug 1, 2025",  km: 6.50 },
-  { date: "Aug 7, 2025",  km: 8.02 },
-  { date: "Aug 8, 2025",  km: 3.64 },
-  { date: "Aug 13, 2025", km: 5.01 },
-  { date: "Aug 16, 2025", km: 5.05 },
-  { date: "Aug 21, 2025", km: 5.55 },
-  { date: "Aug 26, 2025", km: 5.01 },
-  { date: "Aug 30, 2025", km: 6.24 },
-  { date: "Sep 3, 2025",  km: 5.02 },
-  { date: "Sep 6, 2025",  km: 5.05 },
-  { date: "Sep 13, 2025", km: 6.51 },
-  { date: "Sep 24, 2025", km: 4.00 },
-  { date: "Oct 1, 2025",  km: 6.00 },
-  { date: "Oct 11, 2025", km: 5.02 },
-  { date: "Oct 15, 2025", km: 5.24 },
-  { date: "Oct 26, 2025", km: 6.51 },
-  { date: "Oct 27, 2025", km: 4.02 },
-  { date: "Nov 1, 2025",  km: 7.51 },
-  { date: "Nov 5, 2025",  km: 5.39 },
-  { date: "Nov 9, 2025",  km: 9.00 },
-  { date: "Nov 11, 2025", km: 7.44 },
-  { date: "Nov 16, 2025", km: 10.01 },
-  { date: "Nov 20, 2025", km: 6.18 },
-  { date: "Nov 23, 2025", km: 6.01 },
-  { date: "Nov 26, 2025", km: 8.70 },
-  { date: "Nov 30, 2025", km: 12.00 },
-  { date: "Dec 7, 2025",  km: 14.01 },
-  { date: "Dec 10, 2025", km: 5.35 },
-  { date: "Dec 14, 2025", km: 10.01 },
-  { date: "Dec 19, 2025", km: 5.04 },
-  { date: "Dec 24, 2025", km: 5.00 },
-  { date: "Dec 28, 2025", km: 10.00 },
-  { date: "Dec 31, 2025", km: 5.03 },
-  { date: "Jan 1, 2026",  km: 5.00 },
-  { date: "Jan 4, 2026",  km: 7.04 },
-  { date: "Jan 5, 2026",  km: 5.00 },
-  { date: "Jan 8, 2026",  km: 5.55 },
-  { date: "Jan 11, 2026", km: 8.01 },
-  { date: "Jan 13, 2026", km: 5.51 },
-  { date: "Jan 17, 2026", km: 6.48 },
-  { date: "Jan 18, 2026", km: 9.00 },
-  { date: "Jan 20, 2026", km: 4.50 },
-  { date: "Jan 22, 2026", km: 4.53 },
-  { date: "Jan 25, 2026", km: 6.01 },
-  { date: "Jan 27, 2026", km: 6.01 },
-  { date: "Jan 29, 2026", km: 8.29 },
-  { date: "Feb 1, 2026",  km: 9.86 },
-  { date: "Feb 3, 2026",  km: 7.50 },
-  { date: "Feb 5, 2026",  km: 7.11 },
-  { date: "Feb 7, 2026",  km: 11.01 },
-  { date: "Feb 9, 2026",  km: 6.00 },
-  { date: "Feb 11, 2026", km: 6.14 },
-  { date: "Feb 14, 2026", km: 7.18 },
-  { date: "Feb 15, 2026", km: 12.00 },
-  { date: "Feb 18, 2026", km: 5.00 },
-  { date: "Feb 21, 2026", km: 5.95 },
-  { date: "Feb 22, 2026", km: 7.50 },
-  { date: "Feb 23, 2026", km: 7.00 },
-  { date: "Feb 26, 2026", km: 8.31 },
-  { date: "Mar 1, 2026",  km: 12.01 },
-  { date: "Mar 3, 2026",  km: 7.00 },
-  { date: "Mar 6, 2026",  km: 8.12 },
-  { date: "Mar 8, 2026",  km: 13.09 },
-  { date: "Mar 10, 2026", km: 6.00 },
-  { date: "Mar 13, 2026", km: 8.89 },
-  { date: "Mar 15, 2026", km: 10.00 },
-  { date: "Mar 19, 2026", km: 7.00 },
-  { date: "Mar 21, 2026", km: 5.05 },
-  { date: "Mar 29, 2026", km: 8.01 },
-  { date: "Mar 31, 2026", km: 7.01 },
-  { date: "Apr 2, 2026",  km: 8.75 },
-  { date: "Apr 4, 2026",  km: 15.00 },
-  { date: "Apr 7, 2026",  km: 8.01 },
-  { date: "Apr 9, 2026",  km: 5.00 },
-  { date: "Apr 13, 2026", km: 9.00 },
-  { date: "Apr 16, 2026", km: 8.11 },
-  { date: "Apr 18, 2026", km: 17.00 },
-  { date: "Apr 22, 2026", km: 7.51 },
-  { date: "Apr 23, 2026", km: 10.24 },
-  { date: "Apr 25, 2026", km: 18.01 },
-  { date: "Apr 26, 2026", km: 4.51 },
-  { date: "Apr 28, 2026", km: 6.01 },
-  { date: "Apr 30, 2026", km: 6.20 },
-  { date: "May 2, 2026",  km: 10.00 },
-  { date: "May 4, 2026",  km: 9.00 },
+  { date: "May 8, 2025",  km: 2.56,  name: "Evening Run" },
+  { date: "May 10, 2025", km: 3.06,  name: "Evening Run" },
+  { date: "May 14, 2025", km: 3.19,  name: "Evening Run" },
+  { date: "May 18, 2025", km: 3.85,  name: "Morning Run" },
+  { date: "May 20, 2025", km: 3.83,  name: "Morning Run" },
+  { date: "May 25, 2025", km: 4.22,  name: "Morning Run" },
+  { date: "May 26, 2025", km: 4.01,  name: "Evening Run" },
+  { date: "Jun 1, 2025",  km: 3.71,  name: "Evening Run" },
+  { date: "Jun 3, 2025",  km: 4.37,  name: "Morning Run" },
+  { date: "Jun 6, 2025",  km: 3.87,  name: "Evening Run" },
+  { date: "Jun 10, 2025", km: 5.78,  name: "Morning Run" },
+  { date: "Jun 14, 2025", km: 4.57,  name: "Morning Run" },
+  { date: "Jun 17, 2025", km: 5.63,  name: "Morning Run" },
+  { date: "Jun 22, 2025", km: 3.77,  name: "Morning Run" },
+  { date: "Jun 25, 2025", km: 5.03,  name: "Evening Run" },
+  { date: "Jul 5, 2025",  km: 5.02,  name: "Evening Run" },
+  { date: "Jul 8, 2025",  km: 4.52,  name: "Evening Run" },
+  { date: "Jul 13, 2025", km: 6.01,  name: "Kukurica Run" },
+  { date: "Jul 15, 2025", km: 6.06,  name: "Špinavá tlapka Run" },
+  { date: "Jul 19, 2025", km: 7.00,  name: "Saturday Kafíčko Run" },
+  { date: "Jul 23, 2025", km: 3.62,  name: "Evening Run" },
+  { date: "Jul 26, 2025", km: 5.00,  name: "ER or PR Run" },
+  { date: "Aug 1, 2025",  km: 6.50,  name: "🇬🇷 výklus" },
+  { date: "Aug 7, 2025",  km: 8.02,  name: "Morning Run" },
+  { date: "Aug 8, 2025",  km: 3.64,  name: "Morning Run" },
+  { date: "Aug 13, 2025", km: 5.01,  name: "Evening Run" },
+  { date: "Aug 16, 2025", km: 5.05,  name: "Vyhlídková 5ka" },
+  { date: "Aug 21, 2025", km: 5.55,  name: "Nové Botky Run" },
+  { date: "Aug 26, 2025", km: 5.01,  name: "Is vibe running a thing?" },
+  { date: "Aug 30, 2025", km: 6.24,  name: "Amsterdam Run" },
+  { date: "Sep 3, 2025",  km: 5.02,  name: "Evening Run" },
+  { date: "Sep 6, 2025",  km: 5.05,  name: "Adidas Women's 5K race 💗" },
+  { date: "Sep 13, 2025", km: 6.51,  name: "Osada Run" },
+  { date: "Sep 24, 2025", km: 4.00,  name: "Evening Run 🫡" },
+  { date: "Oct 1, 2025",  km: 6.00,  name: "Evening Run 👽" },
+  { date: "Oct 11, 2025", km: 5.02,  name: "Morning Run" },
+  { date: "Oct 15, 2025", km: 5.24,  name: "beh za odmen(o)u" },
+  { date: "Oct 26, 2025", km: 6.51,  name: "Morning Run" },
+  { date: "Oct 27, 2025", km: 4.02,  name: "Morning Run" },
+  { date: "Nov 1, 2025",  km: 7.51,  name: "Morning Run" },
+  { date: "Nov 5, 2025",  km: 5.39,  name: "Evening Drop Set a nové tendy" },
+  { date: "Nov 9, 2025",  km: 9.00,  name: "Morning Run" },
+  { date: "Nov 11, 2025", km: 7.44,  name: "Pyramid Intervals mňamka" },
+  { date: "Nov 16, 2025", km: 10.01, name: "Mandarinka Run" },
+  { date: "Nov 20, 2025", km: 6.18,  name: "Evening Run" },
+  { date: "Nov 23, 2025", km: 6.01,  name: "First sneh run" },
+  { date: "Nov 26, 2025", km: 8.70,  name: "Snežné pyramídy" },
+  { date: "Nov 30, 2025", km: 12.00, name: "Morning Long Run" },
+  { date: "Dec 7, 2025",  km: 14.01, name: "Lunch Run" },
+  { date: "Dec 10, 2025", km: 5.35,  name: "Evening Run" },
+  { date: "Dec 14, 2025", km: 10.01, name: "Morning Run" },
+  { date: "Dec 19, 2025", km: 5.04,  name: "Morning Kolečko" },
+  { date: "Dec 24, 2025", km: 5.00,  name: "Morning Run" },
+  { date: "Dec 28, 2025", km: 10.00, name: "Lunch Run" },
+  { date: "Dec 31, 2025", km: 5.03,  name: "Krumlov Run ❄️" },
+  { date: "Jan 1, 2026",  km: 5.00,  name: "Novoročný" },
+  { date: "Jan 4, 2026",  km: 7.04,  name: "Lunch Run" },
+  { date: "Jan 5, 2026",  km: 5.00,  name: "Fr-easy-n' 5" },
+  { date: "Jan 8, 2026",  km: 5.55,  name: "400m repeats" },
+  { date: "Jan 11, 2026", km: 8.01,  name: "Morning Run" },
+  { date: "Jan 13, 2026", km: 5.51,  name: "🌈🫶🏻" },
+  { date: "Jan 17, 2026", km: 6.48,  name: "Rolling 400s" },
+  { date: "Jan 18, 2026", km: 9.00,  name: "Lunch Run" },
+  { date: "Jan 20, 2026", km: 4.50,  name: "Evening Run" },
+  { date: "Jan 22, 2026", km: 4.53,  name: "Rolling 300s" },
+  { date: "Jan 25, 2026", km: 6.01,  name: "Morning Run" },
+  { date: "Jan 27, 2026", km: 6.01,  name: "Evening Run" },
+  { date: "Jan 29, 2026", km: 8.29,  name: "15 x 200m 🥵" },
+  { date: "Feb 1, 2026",  km: 9.86,  name: "Morning Run" },
+  { date: "Feb 3, 2026",  km: 7.50,  name: "Evening Run" },
+  { date: "Feb 5, 2026",  km: 7.11,  name: "Progressive 7 🏃🏻‍♀️" },
+  { date: "Feb 7, 2026",  km: 11.01, name: "Morning Run" },
+  { date: "Feb 9, 2026",  km: 6.00,  name: "5+1" },
+  { date: "Feb 11, 2026", km: 6.14,  name: "Evening Run" },
+  { date: "Feb 14, 2026", km: 7.18,  name: "Valentine's Run 7K 2026" },
+  { date: "Feb 15, 2026", km: 12.00, name: "Morning Run" },
+  { date: "Feb 18, 2026", km: 5.00,  name: "Morning Run" },
+  { date: "Feb 21, 2026", km: 5.95,  name: "Pyramida 🌋" },
+  { date: "Feb 22, 2026", km: 7.50,  name: "Lunch Run" },
+  { date: "Feb 23, 2026", km: 7.00,  name: "Easy 7" },
+  { date: "Feb 26, 2026", km: 8.31,  name: "100km za február ✅" },
+  { date: "Mar 1, 2026",  km: 12.01, name: "Morning Run" },
+  { date: "Mar 3, 2026",  km: 7.00,  name: "Easy 7" },
+  { date: "Mar 6, 2026",  km: 8.12,  name: "Evening Run" },
+  { date: "Mar 8, 2026",  km: 13.09, name: "Slniečko Run ☀️" },
+  { date: "Mar 10, 2026", km: 6.00,  name: "Evening Run" },
+  { date: "Mar 13, 2026", km: 8.89,  name: "Broken Miles" },
+  { date: "Mar 15, 2026", km: 10.00, name: "🦿🦿☠️" },
+  { date: "Mar 19, 2026", km: 7.00,  name: "Evening Run" },
+  { date: "Mar 21, 2026", km: 5.05,  name: "Vaše liga 5K" },
+  { date: "Mar 29, 2026", km: 8.01,  name: "Vyklepať nožky" },
+  { date: "Mar 31, 2026", km: 7.01,  name: "Evening Easy 7" },
+  { date: "Apr 2, 2026",  km: 8.75,  name: "Afternoon Run" },
+  { date: "Apr 4, 2026",  km: 15.00, name: "Morning Run ☠️☠️☠️" },
+  { date: "Apr 7, 2026",  km: 8.01,  name: "Easy 8" },
+  { date: "Apr 9, 2026",  km: 5.00,  name: "Evening Run" },
+  { date: "Apr 13, 2026", km: 9.00,  name: "Evening Run" },
+  { date: "Apr 16, 2026", km: 8.11,  name: "Rolling 400s" },
+  { date: "Apr 18, 2026", km: 17.00, name: "Morning Run" },
+  { date: "Apr 22, 2026", km: 7.51,  name: "💆🏻‍♀️😊" },
+  { date: "Apr 23, 2026", km: 10.24, name: "Morning pyramids with my birthday boiii" },
+  { date: "Apr 25, 2026", km: 18.01, name: "Morning Run" },
+  { date: "Apr 26, 2026", km: 4.51,  name: "Afternoon Run" },
+  { date: "Apr 28, 2026", km: 6.01,  name: "Evening Run" },
+  { date: "Apr 30, 2026", km: 6.20,  name: "Tempo Run" },
+  { date: "May 2, 2026",  km: 10.00, name: "Morning Run" },
+  { date: "May 4, 2026",  km: 9.00,  name: "Easy 9" },
+  { date: "May 7, 2026",  km: 9.11,  name: "On Off Ks" },
+  { date: "May 9, 2026",  km: 21.15, name: "First ever half 😋" },
 ];
 
 // ---------------------------------------------------------------------------
-// Path generation — same wiggly loop as original
+// Path generation — traced from actual Strava route shape (400×400 viewBox)
 // ---------------------------------------------------------------------------
 const RAW_COORDS = (() => {
-  const pts = [];
-  const N = 120;
-  for (let i = 0; i < N; i++) {
-    const t = (i / N) * Math.PI * 2;
-    const r = 150
-      + 20 * Math.sin(5 * t + 0.4)
-      + 11 * Math.cos(11 * t + 1.3)
-      +  6 * Math.sin(19 * t + 2.2)
-      +  3 * Math.cos(31 * t + 0.7);
-    pts.push([200 + Math.cos(t) * r, 200 + Math.sin(t) * r]);
+  // Natural loop trimmed from GPX: starts/ends at the left-side turn (~5px gap, closed invisibly)
+  const wp = [
+    [30.9,120.8],[32.5,114.1],[37.7,109.7],[43.0,105.4],[47.9,100.4],
+    [52.9,95.6],[58.2,91.3],[63.5,87.0],[68.8,82.8],[74.1,78.4],
+    [79.4,74.2],[84.6,69.8],[89.7,65.0],[94.4,59.6],[99.8,55.7],
+    [105.4,52.3],[111.2,49.7],[116.8,46.2],[122.6,43.2],[128.5,41.2],
+    [134.5,39.7],[140.5,37.7],[146.5,36.2],[152.6,34.8],[158.6,32.8],
+    [164.4,30.1],[170.3,31.6],[176.2,33.5],[181.7,32.8],[187.6,34.8],
+    [193.5,37.1],[199.4,39.6],[205.0,43.0],[210.6,46.3],[216.0,50.5],
+    [221.3,54.5],[226.0,60.0],[231.4,63.8],[236.7,68.2],[240.9,74.4],
+    [245.4,80.0],[249.7,85.8],[253.3,92.8],[256.7,99.8],[260.2,106.7],
+    [263.4,114.0],[266.7,121.1],[269.8,128.4],[273.2,135.4],[276.8,142.1],
+    [280.6,147.1],[285.0,141.1],[289.8,136.0],[294.8,131.1],[299.7,126.1],
+    [304.5,120.9],[309.9,117.1],[315.9,118.5],[321.5,122.0],[326.4,127.1],
+    [330.8,132.9],[335.6,138.1],[339.7,144.5],[344.1,150.3],[348.4,156.4],
+    [352.0,163.2],[356.1,169.3],[360.8,174.8],[365.5,180.2],[369.5,186.5],
+    [368.6,194.4],[366.6,202.4],[363.6,209.8],[359.8,213.6],[356.5,220.6],
+    [352.3,226.9],[348.1,233.0],[343.0,237.7],[338.2,242.5],[334.4,249.2],
+    [331.1,256.3],[328.0,263.5],[323.8,269.7],[319.3,275.5],[314.9,281.4],
+    [310.7,287.5],[305.4,291.7],[300.6,296.9],[297.5,304.2],[294.4,311.3],
+    [290.9,318.3],[287.0,324.8],[282.5,330.6],[278.3,336.7],[273.9,342.6],
+    [269.5,348.5],[264.9,354.2],[260.4,359.7],[256.0,365.6],[250.9,369.9],
+    [246.2,365.1],[240.2,366.3],[234.1,365.0],[229.5,359.8],[224.8,354.3],
+    [220.3,348.6],[215.8,342.7],[211.8,336.4],[207.1,331.1],[201.2,328.6],
+    [195.1,327.8],[189.7,331.1],[185.1,336.7],[180.1,341.5],[174.1,341.7],
+    [168.8,337.6],[164.7,331.4],[160.4,325.3],[155.9,319.6],[151.7,313.4],
+    [147.7,307.1],[144.1,300.2],[141.3,292.7],[137.7,285.9],[133.5,279.7],
+    [131.3,272.2],[127.4,265.7],[123.1,259.7],[118.8,253.6],[114.5,247.6],
+    [110.8,241.0],[106.4,235.1],[101.7,229.7],[97.7,223.3],[92.8,218.2],
+    [87.8,213.3],[83.4,207.4],[79.3,201.2],[75.3,194.7],[72.3,187.3],
+    [69.1,180.2],[65.5,173.3],[61.3,167.2],[57.2,160.9],[53.3,154.4],
+    [49.2,148.1],[44.7,142.3],[40.8,135.8],[36.8,129.4],[32.5,123.4],
+    [31.2,115.9],
+  ];
+
+  // Cumulative arc lengths along the polyline
+  const segLens = [];
+  let total = 0;
+  for (let i = 1; i < wp.length; i++) {
+    const d = Math.hypot(wp[i][0] - wp[i-1][0], wp[i][1] - wp[i-1][1]);
+    segLens.push(d);
+    total += d;
   }
-  return pts;
+
+  // Sample RUNS.length evenly-spaced points — one per run, no gaps possible
+  const N = RUNS.length;
+  const pts = [];
+  for (let i = 0; i < N; i++) {
+    const target = (i / N) * total;
+    let acc = 0;
+    for (let s = 0; s < segLens.length; s++) {
+      if (acc + segLens[s] >= target || s === segLens.length - 1) {
+        const t = segLens[s] > 0 ? Math.min(1, (target - acc) / segLens[s]) : 0;
+        const a = wp[s], b = wp[s + 1];
+        pts.push([a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])]);
+        break;
+      }
+      acc += segLens[s];
+    }
+  }
+  // Flatten slightly: stretch x by 1.15× from centre
+  return pts.map(([x, y]) => [200 + (x - 200) * 1.3, y]);
 })();
 
 const N = RAW_COORDS.length;
 const TOTAL_KM = RUNS.reduce((s, r) => s + r.km, 0);
 
 // Map each run to an evenly-spaced index along the path
-const rScale = d3.scaleLinear([2, 18], [2.5, 8]).clamp(true);
+const rScale = d3.scaleLinear([2, 21], [2.875, 10.35]).clamp(true);
 const runBubbles = RUNS.map((run, i) => {
-  const pathIdx = Math.round((i / (RUNS.length - 1)) * (N - 1));
+  const pathIdx = i;
   const [x, y] = RAW_COORDS[pathIdx];
   return { ...run, x, y, r: rScale(run.km), pathIdx };
 });
@@ -223,17 +275,21 @@ const bubbles = svg.selectAll('circle.run-bubble')
   .attr('cy', d => d.y)
   .attr('r', d => d.r)
   .attr('fill', 'oklch(0.63 0.19 47)')
+  .attr('fill-opacity', 0.75)
   .attr('opacity', 0)
   .attr('cursor', 'pointer')
   .on('mouseenter', function(event, d) {
     d3.select(this)
       .transition().duration(80)
       .attr('fill', 'oklch(0.45 0.19 47)')
+      .attr('fill-opacity', 0.85)
       .attr('r', d.r + 1.5);
 
     const tipDate = tooltip.querySelector('.tip-date');
+    const tipName = tooltip.querySelector('.tip-name');
     const tipKm   = tooltip.querySelector('.tip-km');
     tipDate.textContent = d.date;
+    tipName.textContent = d.name;
     tipKm.textContent   = d.km.toFixed(2) + ' km';
 
     const rect = svgWrap.getBoundingClientRect();
@@ -250,6 +306,7 @@ const bubbles = svg.selectAll('circle.run-bubble')
     d3.select(this)
       .transition().duration(120)
       .attr('fill', 'oklch(0.63 0.19 47)')
+      .attr('fill-opacity', 0.75)
       .attr('r', d.r);
     tooltip.classList.remove('visible');
   });
@@ -290,7 +347,7 @@ function render() {
   const visiblePathIdx = Math.floor(p * N);
 
   // Reveal bubbles in chronological order
-  bubbles.attr('opacity', d => (d.pathIdx <= visiblePathIdx ? 0.85 : 0));
+  bubbles.attr('opacity', d => (d.pathIdx <= visiblePathIdx ? 1 : 0));
 
   // Head dot
   if (p > 0 && p < 0.99) {
@@ -324,10 +381,10 @@ render();
 
 <style>
   .route-section {
-    height: 200vh;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    width: 65vw;
+    height: 250vh;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    width: 85vw;
     margin-left: 50%;
     transform: translateX(-50%);
   }
@@ -360,8 +417,8 @@ render();
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 9px;
-    letter-spacing: 0.09em;
+    font-size: 13px;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
   }
 
@@ -379,9 +436,7 @@ render();
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    max-height: 62vh;
-    border: 1px solid #e2dfd9;
-    background: #faf9f7;
+    max-height: 80vh;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -434,6 +489,11 @@ render();
   .tip-date {
     display: block;
     color: #b8b4ae;
+  }
+
+  .tip-name {
+    display: block;
+    color: #faf9f7;
   }
 
   .tip-km {
